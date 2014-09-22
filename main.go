@@ -1,15 +1,15 @@
 package main
 
 import (
-	"./battery"
-	"./cpu"
+	"github.com/mmstick/i3gostatusbar/battery"
+	"github.com/mmstick/i3gostatusbar/cpu"
+	"github.com/mmstick/i3gostatusbar/memory"
+	"github.com/mmstick/i3gostatusbar/network"
+	"github.com/mmstick/i3gostatusbar/system"
+	"github.com/mmstick/i3gostatusbar/uptime"
 	"fmt"
-	"./memory"
-	"./network"
 	"runtime"
-	"./system"
 	"time"
-	"./uptime"
 )
 
 var refreshRate = 1 * time.Second
