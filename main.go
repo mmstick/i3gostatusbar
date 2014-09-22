@@ -1,13 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"github.com/mmstick/i3gostatusbar/battery"
 	"github.com/mmstick/i3gostatusbar/cpu"
 	"github.com/mmstick/i3gostatusbar/memory"
 	"github.com/mmstick/i3gostatusbar/network"
 	"github.com/mmstick/i3gostatusbar/system"
 	"github.com/mmstick/i3gostatusbar/uptime"
-	"fmt"
 	"runtime"
 	"time"
 )
@@ -27,11 +27,11 @@ func statusBarFormat(batteryExists bool) string {
 // Returns system information that does not need to be dynamically updated.
 func getStaticSystemInformation() *system.Info {
 	info := system.Info{
-		Kernel: system.KernelVersion(),
-		Model: cpu.Model(),
+		Kernel:   system.KernelVersion(),
+		Model:    cpu.Model(),
 		MemTotal: memory.Installed(),
-		Host: system.Host(),
-		User: system.Username(),
+		Host:     system.Host(),
+		User:     system.Username(),
 	}
 	return &info
 }

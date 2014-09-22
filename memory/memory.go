@@ -1,36 +1,37 @@
 package memory
 
 import (
-        "fmt"
-        "io/ioutil"
-        "strconv"
-        "strings"
+	"fmt"
+	"io/ioutil"
+	"strconv"
+	"strings"
 )
 
 var sprintf = fmt.Sprintf
+var split = strings.Split
+var toInt = strconv.Atoi
 
-// Returns a newline-delimited string slice of the file
-func parseFile(file string) []string {
-        cached, _ := ioutil.ReadFile(file)
-        return strings.Split(string(cached), "\n")
+// Opens meminfo, splits it into a newline-delimited slice, cuts a single line
+// from that slice, splits that line into a space-delimited slice, gets a
+// single element from that slie and returns the value in MiB.
+func parseMem(line, element uint) uint {
+	cached, _ := ioutil.ReadFile("/proc/meminfo")
+	mem, _ := toInt(split(split(string(cached), "\n")[line], " ")[element])
+	return uint(mem / 1024)
 }
 
 // Returns the amount of memory installed in the system
-func Installed() int {
-        mem := parseFile("/proc/meminfo")[0]
-        totalMem, _ := strconv.Atoi(mem[17 : len(mem)-3])
-        return totalMem / 1024
+func Installed() uint {
+	return parseMem(0, 8)
 }
 
 // Returns the memory currently available as an int
-func memAvailable() int {
-        mem := parseFile("/proc/meminfo")[2]
-        memAvailable, _ := strconv.Atoi(mem[18 : len(mem)-3])
-        return memAvailable / 1024
+func memAvailable() uint {
+	return parseMem(2, 4)
 }
 
 // Returns a string indicating memory usage out of total available memory
-func Statistics(memTotal *int, memStat *string, done chan bool) {
-        *memStat = sprintf("RAM: %d/%dMB", *memTotal-memAvailable(), *memTotal)
-        done <- true
+func Statistics(memTotal *uint, memStat *string, done chan bool) {
+	*memStat = sprintf("RAM: %d/%dMB", *memTotal-memAvailable(), *memTotal)
+	done <- true
 }
