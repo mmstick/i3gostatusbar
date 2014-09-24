@@ -1,13 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"github.com/mmstick/i3gostatusbar/battery"
 	"github.com/mmstick/i3gostatusbar/cpu"
 	"github.com/mmstick/i3gostatusbar/memory"
 	"github.com/mmstick/i3gostatusbar/network"
 	"github.com/mmstick/i3gostatusbar/system"
 	"github.com/mmstick/i3gostatusbar/uptime"
+	"fmt"
 	"runtime"
 	"time"
 )
@@ -18,9 +18,9 @@ var refreshRate = 1 * time.Second
 // this will return an additional string element.
 func statusBarFormat(batteryExists bool) string {
 	if batteryExists {
-		return "%s@%s | %s | %s | %s %s | %s | %s | %s | %s\n"
+		return "%s@%s | %s | %s | %s %s | %s | %s | %s %s %s | %s\n"
 	} else {
-		return "%s@%s | %s | %s | %s %s | %s | %s | %s\n"
+		return "%s@%s | %s | %s | %s %s | %s | %s %s %s | %s\n"
 	}
 }
 
@@ -32,6 +32,8 @@ func getStaticSystemInformation() *system.Info {
 		MemTotal: memory.Installed(),
 		Host:     system.Host(),
 		User:     system.Username(),
+		NetName:  network.Name(),
+		NetSpeed: network.Speed(),
 	}
 	return &info
 }
@@ -47,7 +49,7 @@ func getDynamicSystemInformation(info system.Info) (*system.Info, bool) {
 	go uptime.Get(&info.Uptime, synchronize)
 	go cpu.Frequencies(&info.Cpufreqs, synchronize)
 	go memory.Statistics(&info.MemTotal, &info.MemStat, synchronize)
-	go network.Statistics(&info.TransferStat, synchronize)
+	go network.Statistics(&info.NetStat, synchronize)
 	go system.CurrentTime(&info.Date, synchronize)
 	for jobCount := 0; jobCount < jobs; jobCount++ {
 		<-synchronize
@@ -58,13 +60,15 @@ func getDynamicSystemInformation(info system.Info) (*system.Info, bool) {
 // Refreshes the status bar
 func refreshBar(info *system.Info, batteryExists bool) {
 	if batteryExists {
-		fmt.Printf(statusBarFormat(true), info.User, info.Host, info.Kernel,
-			info.Uptime, info.Model, info.Cpufreqs, info.MemStat,
-			info.TransferStat, info.BatteryInfo, info.Date)
+		fmt.Printf(statusBarFormat(true), info.User, info.Host,
+			info.Kernel, info.Uptime, info.Model, info.Cpufreqs,
+			info.MemStat, info.NetName, info.NetSpeed, info.NetStat,
+			info.BatteryInfo, info.Date)
 	} else {
-		fmt.Printf(statusBarFormat(false), info.User, info.Host, info.Kernel,
-			info.Uptime, info.Model, info.Cpufreqs, info.MemStat,
-			info.TransferStat, info.Date)
+		fmt.Printf(statusBarFormat(false), info.User, info.Host,
+			info.Kernel, info.Uptime, info.Model, info.Cpufreqs,
+			info.MemStat, info.NetName, info.NetSpeed, info.NetStat,
+			info.Date)
 	}
 }
 

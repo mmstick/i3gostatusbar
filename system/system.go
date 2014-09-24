@@ -9,9 +9,19 @@ import (
 
 // Contains system information
 type Info struct {
-	Kernel, Model, Host, User                                  string // Static
-	Uptime, Cpufreqs, MemStat, TransferStat, BatteryInfo, Date string // Dynamic
-	MemTotal                                                   uint
+	Kernel      string
+	Model       string
+	Host        string
+	User        string
+	Uptime      string
+	Cpufreqs    string
+	MemStat     string
+	NetStat     string
+	NetName     string
+	NetSpeed    string
+	BatteryInfo string
+	Date        string
+	MemTotal    uint
 }
 
 // This is used to get a string from the kernel utsname

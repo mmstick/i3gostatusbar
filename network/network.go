@@ -91,8 +91,8 @@ func formatBytes(bytes int) string {
 }
 
 // Returns the transfer statistics directory name.
-func transferDir() string {
-	return sprintf("/sys/class/net/%s/statistics/", getCurrentNetwork())
+func networkDir() string {
+	return sprintf("/sys/class/net/%s/", getCurrentNetwork())
 }
 
 // Returns the contents of the file as an integer variable
@@ -102,12 +102,12 @@ func fileAsInt(file string) int {
 
 // Returns the amount of bytes downloaded since boot.
 func downloadInformation() string {
-	return formatBytes(fileAsInt(transferDir() + "rx_bytes"))
+	return formatBytes(fileAsInt(networkDir() + "statistics/rx_bytes"))
 }
 
 // Returns the amount of bytes uploaded since boot.
 func uploadInformation() string {
-	return formatBytes(fileAsInt(transferDir() + "tx_bytes"))
+	return formatBytes(fileAsInt(networkDir() + "statistics/tx_bytes"))
 }
 
 // Returns RX/TX transfer statistics
@@ -115,4 +115,14 @@ func Statistics(transferStat *string, done chan bool) {
 	*transferStat = sprintf("D:%s U:%s", downloadInformation(),
 		uploadInformation())
 	done <- true
+}
+
+// Returns the speed of the currently active connection in Mbps
+func Speed() string {
+	return "S: " + parseFile(networkDir() + "speed")[0] + " Mbps"
+}
+
+// Returns the currently active network connection.
+func Name() string {
+	return getCurrentNetwork()
 }
