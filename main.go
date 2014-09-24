@@ -18,7 +18,7 @@ var refreshRate = 1 * time.Second
 // this will return an additional string element.
 func statusBarFormat(batteryExists bool) string {
 	if batteryExists {
-		return "%s@%s | %s | %s | %s %s | %s | %s | %s %s %s | %s\n"
+		return "%s@%s | %s | %s | %s %s | %s | %s %s %s | %s | %s\n"
 	} else {
 		return "%s@%s | %s | %s | %s %s | %s | %s %s %s | %s\n"
 	}
