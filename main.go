@@ -44,11 +44,11 @@ func getDynamicSystemInformation(info system.Info) (*system.Info, bool) {
 	batteryExists, jobs := battery.Exists()
 	synchronize := make(chan bool, jobs)
 	if batteryExists {
-		go battery.Information(&info.BatteryInfo, synchronize)
+		go battery.Information(&info.Battery, synchronize)
 	}
 	go uptime.Get(&info.Uptime, synchronize)
 	go cpu.Frequencies(&info.Cpufreqs, synchronize)
-	go memory.Statistics(&info.MemTotal, &info.MemStat, synchronize)
+	go memory.Statistics(&info.MemTotal, &info.Memory, synchronize)
 	go network.Statistics(&info.NetStat, synchronize)
 	go system.CurrentTime(&info.Date, synchronize)
 	for jobCount := 0; jobCount < jobs; jobCount++ {
@@ -62,12 +62,12 @@ func refreshBar(info *system.Info, batteryExists bool) {
 	if batteryExists {
 		fmt.Printf(statusBarFormat(true), info.User, info.Host,
 			info.Kernel, info.Uptime, info.Model, info.Cpufreqs,
-			info.MemStat, info.NetName, info.NetSpeed, info.NetStat,
-			info.BatteryInfo, info.Date)
+			info.Memory, info.NetName, info.NetSpeed, info.NetStat,
+			info.Battery, info.Date)
 	} else {
 		fmt.Printf(statusBarFormat(false), info.User, info.Host,
 			info.Kernel, info.Uptime, info.Model, info.Cpufreqs,
-			info.MemStat, info.NetName, info.NetSpeed, info.NetStat,
+			info.Memory, info.NetName, info.NetSpeed, info.NetStat,
 			info.Date)
 	}
 }

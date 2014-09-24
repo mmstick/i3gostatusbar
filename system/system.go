@@ -15,11 +15,11 @@ type Info struct {
 	User        string
 	Uptime      string
 	Cpufreqs    string
-	MemStat     string
+	Memory      string
 	NetStat     string
 	NetName     string
 	NetSpeed    string
-	BatteryInfo string
+	Battery     string
 	Date        string
 	MemTotal    uint
 }
