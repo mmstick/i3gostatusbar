@@ -3,6 +3,7 @@ package battery
 import (
 	"fmt"
 	"io/ioutil"
+	"strings"
 )
 
 var sprintf = fmt.Sprintf
@@ -21,7 +22,7 @@ func Exists() (bool, int) {
 // Returns a string of the file contents
 func parseFile(file string) string {
 	cached, _ := ioutil.ReadFile(file)
-	return string(cached)
+	return strings.TrimSuffix(string(cached), "\n")
 }
 
 // Returns the status of the battery: [C]harging, [F]ull, or [D]ischarging.
