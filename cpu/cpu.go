@@ -1,3 +1,5 @@
+// Packge cpu contains functions for obtaining information about the cetral
+// processing unit.
 package cpu
 
 import (
@@ -9,19 +11,19 @@ import (
 
 var sprintf = fmt.Sprintf
 
-// Returns a newline-delimited string slice of the file
+// parseFile returns a newline-delimited string slice of the file.
 func parseFile() []string {
 	cached, _ := ioutil.ReadFile("/proc/cpuinfo")
 	return strings.Split(string(cached), "\n")
 }
 
-// Returns the number of CPU cores in the system
+// parseCPUCount returns the number of CPU cores in the system.
 func parseCPUCount(count string) int {
 	cores, _ := strconv.Atoi(count[11:])
 	return cores
 }
 
-// Parses CPU frequency information
+// parseFrequency obtains the CPU frequency.
 func parseFrequency(frequency string) string {
 	frequency = frequency[11 : len(frequency)-4]
 	if len(frequency) < 4 {
@@ -30,7 +32,7 @@ func parseFrequency(frequency string) string {
 	return frequency + "MHz"
 }
 
-// Obtains the printf format for the current core frequency
+// getFrequencyFormat returns the printf format for the current core frequency.
 func getFrequencyFormat(index *int, lastCore int) string {
 	if *index == lastCore {
 		return "%s"
@@ -39,12 +41,12 @@ func getFrequencyFormat(index *int, lastCore int) string {
 	}
 }
 
-// Returns the frequency of the current core
+// getCoreFrequency returns the frequency of the current core.
 func getCoreFrequency(cpuInfo []string, index *int, format *string) string {
 	return sprintf(*format, parseFrequency(cpuInfo[*index*27+7]))
 }
 
-// Returns a string containing the frequencies of each CPU core
+// Frequencies returns a string containing the frequencies of each CPU core.
 func Frequencies(cpufreqs *string, done chan bool) {
 	cpuInfo := parseFile()
 	numCPUs := parseCPUCount(cpuInfo[len(cpuInfo)-17]) + 1
@@ -57,7 +59,7 @@ func Frequencies(cpufreqs *string, done chan bool) {
 	done <- true
 }
 
-// Returns the CPU Model
+// Model returns the CPU Model
 func Model() string {
 	return parseFile()[4][13:]
 }

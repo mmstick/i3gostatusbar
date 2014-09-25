@@ -1,3 +1,5 @@
+// Package uptime contains functions for obtaining information about the
+// uptime status.
 package uptime
 
 import (
@@ -9,15 +11,16 @@ import (
 
 var sprintf = fmt.Sprintf
 
-// Converts a string that we know is an integer to an integer
+// strToInt converts a string that we know is an integer to an integer
 func strToInt(input string) int {
 	output, _ := strconv.Atoi(input)
 	return output
 }
 
-// Takes an uptime value and divides it by a scale (days/hours/minutes).
-// After determining the amount of time in that scale, it subtracts that amount
-// from uptime and returns the time in days/hours/minutes
+// getTimeScale tkes an uptime value and divides it by a scale
+// (days/hours/minutes). After determining the amount of time in that scale,
+// it subtracts that amount from uptime and returns the time in
+// days/hours/minutes.
 func getTimeScale(time **int, scale int) int {
 	var output int
 	if **time > scale {
@@ -27,8 +30,8 @@ func getTimeScale(time **int, scale int) int {
 	return output
 }
 
-// Adds an extra zero in case the time only has one digit
-func formatTime(time int) string {
+// padTime an extra zero in case the time only has one digit
+func padTime(time int) string {
 	output := strconv.Itoa(time)
 	if len(output) == 1 {
 		output = "0" + output
@@ -36,40 +39,40 @@ func formatTime(time int) string {
 	return output
 }
 
-// Returns the time formatted in days and subtracts that from time.
+// getDays returns the time formatted in days and subtracts that from time.
 func getDays(time *int) string {
-	return formatTime(getTimeScale(&time, 86400))
+	return padTime(getTimeScale(&time, 86400))
 }
 
-// Returns the time formatted in hours and subtracts that from time.
+// getHours returns the time formatted in hours and subtracts that from time.
 func getHours(time *int) string {
-	return formatTime(getTimeScale(&time, 3600))
+	return padTime(getTimeScale(&time, 3600))
 }
 
-// Returns the time formatted in minutes and subtracts that from time.
+// getMinutes returns the time formatted in minutes and subtracts that from time.
 func getMinutes(time *int) string {
-	return formatTime(getTimeScale(&time, 60))
+	return padTime(getTimeScale(&time, 60))
 }
 
-// Returns the time formatted in seconds.
+// getSeconds returns the time formatted in seconds.
 func getSeconds(time *int) string {
-	return formatTime(*time)
+	return padTime(*time)
 }
 
-// Takes the uptime integer and converts it into a human readable format.
-// Ex: 01:21:18:57 for days:hours:seconds:minutes
+// humanReadableTime takes the uptime integer and converts it into a human
+// readable format. Ex: 01:21:18:57 for days:hours:seconds:minutes
 func humanReadableTime(time int) string {
 	return sprintf("%s:%s:%s:%s", getDays(&time), getHours(&time),
 		getMinutes(&time), getSeconds(&time))
 }
 
-// Open /proc/uptime and return the value in integer format.
+// parseUptime opens /proc/uptime and return the value in integer format.
 func parseUptime() int {
 	cached, _ := ioutil.ReadFile("/proc/uptime")
 	return strToInt(strings.Split(string(cached), ".")[0])
 }
 
-// Returns the current uptime in days:hours:minutes:seconds format
+// Get returns the current uptime in days:hours:minutes:seconds format
 func Get(uptime *string, done chan bool) {
 	*uptime = sprintf("Uptime: %s", humanReadableTime(parseUptime()))
 	done <- true

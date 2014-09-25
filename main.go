@@ -14,8 +14,8 @@ import (
 
 var refreshRate = 1 * time.Second
 
-// Returns the printf format for formatting the status bar. If a battery exists,
-// this will return an additional string element.
+// statusBarFormat returns the printf format for formatting the status bar.
+// If a battery exists, this will return an additional string element.
 func statusBarFormat(batteryExists bool) string {
 	if batteryExists {
 		return "%s@%s | %s | %s | %s %s | %s | %s %s %s | %s | %s\n"
@@ -24,7 +24,8 @@ func statusBarFormat(batteryExists bool) string {
 	}
 }
 
-// Returns system information that does not need to be dynamically updated.
+// getStaticSystemInformation collects system information that does not need
+// to be dynamically updated.
 func getStaticSystemInformation() *system.Info {
 	info := system.Info{
 		Kernel:   system.KernelVersion(),
@@ -38,8 +39,8 @@ func getStaticSystemInformation() *system.Info {
 	return &info
 }
 
-// Adds dynamic system information to the systemInfo struct and checks for
-// the existence of a battery.
+// getDynamicSystemInformation adds dynamic system information to the
+// systemInfo struct and checks for the existence of a battery.
 func getDynamicSystemInformation(info system.Info) (*system.Info, bool) {
 	batteryExists, jobs := battery.Exists()
 	synchronize := make(chan bool, jobs)
@@ -57,7 +58,7 @@ func getDynamicSystemInformation(info system.Info) (*system.Info, bool) {
 	return &info, batteryExists
 }
 
-// Refreshes the status bar
+// refreshBar refreshes the status bar
 func refreshBar(info *system.Info, batteryExists bool) {
 	if batteryExists {
 		fmt.Printf(statusBarFormat(true), info.User, info.Host,

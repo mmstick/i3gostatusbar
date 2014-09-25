@@ -8,8 +8,8 @@ import (
 
 var sprintf = fmt.Sprintf
 
-// If a battery exists in the system, return true and the number of concurrent
-// jobs to perform.
+// Exists checks if a battery exists in the current system, and if so returns
+// true as well as the number of jobs to process concurrently.
 func Exists() (bool, int) {
 	battery, _ := ioutil.ReadDir("/sys/class/power_supply")
 	if len(battery) > 0 {
@@ -19,33 +19,36 @@ func Exists() (bool, int) {
 	}
 }
 
-// Returns a string of the file contents
+// parseFile returns a newline-delimited string of the file contents.
 func parseFile(file string) string {
 	cached, _ := ioutil.ReadFile(file)
 	return strings.TrimSuffix(string(cached), "\n")
 }
 
-// Returns the status of the battery: [C]harging, [F]ull, or [D]ischarging.
+// status returns the battery satus: [C]harging, [F]ull, or [D]ischarging.
 func status() byte {
 	return parseFile("/sys/class/power_supply/BAT1/status")[0]
 }
 
-// Returns the current battery life in percent.
+// charge returns the current battery life in percent.
 func charge() string {
 	return parseFile("/sys/class/power_supply/BAT1/capacity")
 }
 
-// Returns a string indicating that the battery is currently charging.
+// isCharging returns a string indicating that the battery is currently
+// charging.
 func isCharging() string {
 	return sprintf("BAT Charging: %s%%", charge())
 }
 
-// Returns a string indicating that the battery is currently discharging.
+// isDischarging returns a string indicating that the battery is currently
+// discharging.
 func isDischarging() string {
 	return sprintf("BAT: %s%%", charge())
 }
 
-// Checks the battery status and returns information based on that information.
+// Information checks the status of the battery and returns information
+// regarding that status.
 func Information(batteryStat *string, done chan bool) {
 	switch status() {
 	case 'C':

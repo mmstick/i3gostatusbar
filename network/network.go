@@ -1,3 +1,6 @@
+// Package network contains functions for obtaining information about the
+// currently active network, such as the connection name, speed, and total
+// up/downloaded bytes since boot.
 package network
 
 import (
@@ -9,19 +12,20 @@ import (
 
 var sprintf = fmt.Sprintf
 
-// Returns a newline-delimited string slice of the file
+// parseFile returns a newline-delimited string slice of the file.
 func parseFile(file string) []string {
 	cached, _ := ioutil.ReadFile(file)
 	return strings.Split(string(cached), "\n")
 }
 
-// Converts a string that we know is an integer to an integer
+// strToInt converts a string that we know is an integer to an integer.
 func strToInt(input string) int {
 	output, _ := strconv.Atoi(input)
 	return output
 }
 
-// Returns true if the connection is not a loopback address.
+// connectionIsNotLoopback returns true if the connection is not a loopback
+// address.
 func connectionIsNotLoopback(connection *string) bool {
 	if *connection == "lo" {
 		return false
@@ -30,7 +34,7 @@ func connectionIsNotLoopback(connection *string) bool {
 	}
 }
 
-// Returns true if the connection is up
+// connectionIsUp returns true if the connection status is 'up'.
 func connectionIsUp(connection *string) bool {
 	if parseFile("/sys/class/net/" + *connection + "/operstate")[0][0] == 'u' {
 		return true
@@ -39,7 +43,8 @@ func connectionIsUp(connection *string) bool {
 	}
 }
 
-// Returns true if the connection is active and isn't a loopback address.
+// connectionIsActive returns true if the connection is active and isn't a
+// loopback address.
 func connectionIsActive(connection string) bool {
 	if connectionIsNotLoopback(&connection) && connectionIsUp(&connection) {
 		return true
@@ -60,8 +65,8 @@ func getCurrentNetwork() string {
 	return activeConnection
 }
 
-// Pads digits with spaces so that the status bar always has the same number of
-// characters.
+// PadDigits pads digits with spaces so that the status bar always has the same
+// number of characters.
 func padDigits(number int) string {
 	numberString := sprintf("%d", number)
 	switch len(numberString) {
@@ -76,7 +81,7 @@ func padDigits(number int) string {
 	}
 }
 
-// Formats the bytes into their respectiev scales
+// formatBytes formats the bytes into their respectiev scales.
 func formatBytes(bytes int) string {
 	switch {
 	case bytes > 10737418240:
@@ -90,39 +95,39 @@ func formatBytes(bytes int) string {
 	}
 }
 
-// Returns the transfer statistics directory name.
+// networkDir returns the transfer statistics directory name.
 func networkDir() string {
 	return sprintf("/sys/class/net/%s/", getCurrentNetwork())
 }
 
-// Returns the contents of the file as an integer variable
+// fileAsInt returns the contents of the file as an integer variable.
 func fileAsInt(file string) int {
 	return strToInt(parseFile(file)[0])
 }
 
-// Returns the amount of bytes downloaded since boot.
+// downloadInformation returns the amount of bytes downloaded since boot.
 func downloadInformation() string {
 	return formatBytes(fileAsInt(networkDir() + "statistics/rx_bytes"))
 }
 
-// Returns the amount of bytes uploaded since boot.
+// uploadInformation returns the amount of bytes uploaded since boot.
 func uploadInformation() string {
 	return formatBytes(fileAsInt(networkDir() + "statistics/tx_bytes"))
 }
 
-// Returns RX/TX transfer statistics
+// Statistics returns RX/TX transfer statistics since boot.
 func Statistics(transferStat *string, done chan bool) {
 	*transferStat = sprintf("D:%s U:%s", downloadInformation(),
 		uploadInformation())
 	done <- true
 }
 
-// Returns the speed of the currently active connection in Mbps
+// Speed returns the speed of the currently active connection in Mbps.
 func Speed() string {
 	return "S: " + parseFile(networkDir() + "speed")[0] + " Mbps"
 }
 
-// Returns the currently active network connection.
+// Name returns the currently active network connection.
 func Name() string {
 	return getCurrentNetwork()
 }

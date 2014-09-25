@@ -1,3 +1,5 @@
+// Package system contains the Info struct that stores all system information
+// as well as a few functions for gathering system information.
 package system
 
 import (
@@ -7,7 +9,7 @@ import (
 	"time"
 )
 
-// Contains system information
+// Info contains system information
 type Info struct {
 	Kernel      string
 	Model       string
@@ -24,7 +26,7 @@ type Info struct {
 	MemTotal    uint
 }
 
-// This is used to get a string from the kernel utsname
+// utsnameToString is used to get a string from the kernel utsname.
 func utsnameToString(unameArray [65]int8) string {
 	var byteString [65]byte
 	var indexLength int
@@ -34,26 +36,26 @@ func utsnameToString(unameArray [65]int8) string {
 	return string(byteString[0:indexLength])
 }
 
-// Returns kernel version information
+// KernelVersion returns kernel version information
 func KernelVersion() string {
 	var utsname syscall.Utsname
 	_ = syscall.Uname(&utsname)
 	return utsnameToString(utsname.Release)
 }
 
-// Returns the current time
+// CurrentTime returns the current time
 func CurrentTime(date *string, done chan bool) {
 	*date = time.Now().Format(time.RFC1123)
 	done <- true
 }
 
-// Returns the hostname
+// Host returns the hostname
 func Host() string {
 	host, _ := os.Hostname()
 	return host
 }
 
-// Returns the user's name
+// Username returns the user's name
 func Username() string {
 	currentUser, _ := user.Current()
 	return currentUser.Username
