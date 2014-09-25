@@ -80,11 +80,11 @@ func padDigits(number int) string {
 func formatBytes(bytes int) string {
 	switch {
 	case bytes > 10737418240:
-		return sprintf("%sGB", padDigits(bytes/1073741824))
+		return sprintf("%sGiB", padDigits(bytes/1073741824))
 	case bytes > 10485760:
-		return sprintf("%sMB", padDigits(bytes/1048576))
+		return sprintf("%sMiB", padDigits(bytes/1048576))
 	case bytes > 10240:
-		return sprintf("%sKB", padDigits(bytes/1024))
+		return sprintf("%sKiB", padDigits(bytes/1024))
 	default:
 		return sprintf("%s  B", padDigits(bytes))
 	}
