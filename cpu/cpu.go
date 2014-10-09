@@ -67,7 +67,7 @@ func getTemperature() int {
 	if err == nil {
 		temp, _ = strconv.Atoi(string(input)[:2])
 	} else {
-		temp = "N/A"
+		temp = 0
 	}
 	return temp
 }
