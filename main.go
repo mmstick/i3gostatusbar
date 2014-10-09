@@ -6,7 +6,6 @@ import (
 	"github.com/mmstick/i3gostatusbar/memory"
 	"github.com/mmstick/i3gostatusbar/network"
 	"github.com/mmstick/i3gostatusbar/system"
-	"github.com/mmstick/i3gostatusbar/uptime"
 	"fmt"
 	"time"
 )
@@ -46,12 +45,12 @@ func getDynamicSystemInformation(info system.Info) (*system.Info, bool) {
 	if batteryExists {
 		go battery.Information(&info.Battery, synchronize)
 	}
-	go uptime.Get(&info.Uptime, synchronize)
 	go cpu.Frequencies(&info.Cpufreqs, synchronize)
 	go cpu.CPUTemp(&info.Cputemp, synchronize)
 	go memory.Statistics(&info.MemTotal, &info.Memory, synchronize)
 	go network.Statistics(&info.NetStat, synchronize)
 	go system.CurrentTime(&info.Date, synchronize)
+	go system.Uptime(&info.Uptime, synchronize)
 	for jobCount := 0; jobCount < jobs; jobCount++ {
 		<-synchronize
 	}

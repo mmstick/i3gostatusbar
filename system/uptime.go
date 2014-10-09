@@ -1,6 +1,4 @@
-// Package uptime contains functions for obtaining information about the
-// uptime status.
-package uptime
+package system
 
 import (
 	"fmt"
@@ -72,8 +70,8 @@ func parseUptime() int {
 	return strToInt(strings.Split(string(cached), ".")[0])
 }
 
-// Get returns the current uptime in days:hours:minutes:seconds format
-func Get(uptime *string, done chan bool) {
+// Uptime returns the current uptime in days:hours:minutes:seconds format
+func Uptime(uptime *string, done chan bool) {
 	*uptime = sprintf("Uptime: %s", humanReadableTime(parseUptime()))
 	done <- true
 }
