@@ -11,25 +11,26 @@ import (
 
 var sprintf = fmt.Sprintf
 
-// parseFile returns a newline-delimited string slice of the file.
-func parseFile() []string {
+// parseCPUInfo returns a newline-delimited string slice of '/proc/cpuinfo'.
+func parseCPUInfo() []string {
 	cached, _ := ioutil.ReadFile("/proc/cpuinfo")
 	return strings.Split(string(cached), "\n")
 }
 
 // parseCPUCount returns the number of CPU cores in the system.
-func parseCPUCount(count string) int {
-	cores, _ := strconv.Atoi(count[11:])
-	return cores
+func parseCPUCount(cpuinfo []string) int {
+	cores, _ := strconv.Atoi(strings.Fields(cpuinfo[len(cpuinfo) - 18])[3])
+	return cores + 1
 }
 
-// parseFrequency obtains the CPU frequency.
+/* parseFrequency obtains the CPU frequency. It first uses Fields to return only
+ * the field on that line that contains the CPU frequency. Then, it uses Replace
+ * to replace the periods (for three digit frequencies) with a space. Finally,
+ * it returns the frequency and adds 'MHz' at the end. */
 func parseFrequency(frequency string) string {
-	frequency = frequency[11 : len(frequency)-4]
-	if len(frequency) < 4 {
-		frequency = " " + frequency
-	}
-	return frequency + "MHz"
+	frequency = strings.Fields(frequency)[3][:4]
+	frequency = strings.Replace(frequency, ".", " ", -1)
+	return frequency + " MHz"
 }
 
 // getFrequencyFormat returns the printf format for the current core frequency.
@@ -43,13 +44,13 @@ func getFrequencyFormat(index *int, lastCore int) string {
 
 // getCoreFrequency returns the frequency of the current core.
 func getCoreFrequency(cpuInfo []string, index *int, format *string) string {
-	return sprintf(*format, parseFrequency(cpuInfo[*index*27+7]))
+	return sprintf(*format, parseFrequency(&cpuInfo[*index*28+7]))
 }
 
 // Frequencies returns a string containing the frequencies of each CPU core.
 func Frequencies(cpufreqs *string, done chan bool) {
-	cpuInfo := parseFile()
-	numCPUs := parseCPUCount(cpuInfo[len(cpuInfo)-17]) + 1
+	cpuInfo := parseCPUInfo()
+	numCPUs := parseCPUCount(cpuInfo)
 	var cpuFrequencies string
 	for index := 0; index < numCPUs; index++ {
 		format := getFrequencyFormat(&index, numCPUs-1)
@@ -61,5 +62,5 @@ func Frequencies(cpufreqs *string, done chan bool) {
 
 // Model returns the CPU Model
 func Model() string {
-	return parseFile()[4][13:]
+	return parseCPUInfo()[4][13:]
 }
