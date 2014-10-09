@@ -23,7 +23,7 @@ func parseMem(line uint) uint {
 	return uint(memory / 1024)
 }
 
-// Installed eturns the amount of memory installed in the system.
+// Installed returns the amount of memory installed in the system.
 func Installed() uint {
 	return parseMem(0)
 }
@@ -33,9 +33,14 @@ func memAvailable() uint {
 	return parseMem(2)
 }
 
+// memUsed returns the memory used by subtracting available from the total.
+func memUsed(memTotal *uint) uint {
+	return *memTotal - memAvailable()
+}
+
 // Statistics returns a string indicating memory usage out of total available
 // memory.
 func Statistics(memTotal *uint, memStat *string, done chan bool) {
-	*memStat = sprintf("RAM: %d/%dMB", *memTotal-memAvailable(), *memTotal)
+	*memStat = sprintf("RAM: %d/%dMiB", memUsed(memTotal), *memTotal)
 	done <- true
 }
