@@ -44,7 +44,7 @@ func getFrequencyFormat(index *int, lastCore int) string {
 
 // getCoreFrequency returns the frequency of the current core.
 func getCoreFrequency(cpuInfo []string, index *int, format *string) string {
-	return sprintf(*format, parseFrequency(&cpuInfo[*index*28+7]))
+	return sprintf(*format, parseFrequency(cpuInfo[*index*28+7]))
 }
 
 // Frequencies returns a string containing the frequencies of each CPU core.
