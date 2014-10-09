@@ -75,5 +75,8 @@ func CPUTemp(cputemp *int, done chan bool) {
 
 // Model returns the CPU Model
 func Model() string {
-	return parseCPUInfo()[4][13:]
+	modelinfo := strings.Fields(parseCPUInfo()[4])[3:]
+	vendor := modelinfo[0]
+	model := modelinfo[1]
+	return vendor + " " + model
 }
