@@ -8,7 +8,6 @@ import (
 	"github.com/mmstick/i3gostatusbar/system"
 	"github.com/mmstick/i3gostatusbar/uptime"
 	"fmt"
-	"runtime"
 	"time"
 )
 
@@ -18,9 +17,9 @@ var refreshRate = 1 * time.Second
 // If a battery exists, this will return an additional string element.
 func statusBarFormat(batteryExists bool) string {
 	if batteryExists {
-		return "%s@%s | %s | %s | %s %s | %s | %s %s %s | %s | %s\n"
+		return "%s@%s | %s | %s | %s %s | %s | Temp: %sC | %s %s %s | %s | %s\n"
 	} else {
-		return "%s@%s | %s | %s | %s %s | %s | %s %s %s | %s\n"
+		return "%s@%s | %s | %s | %s %s | %s | Temp: %sC | %s %s %s | %s\n"
 	}
 }
 
@@ -49,6 +48,7 @@ func getDynamicSystemInformation(info system.Info) (*system.Info, bool) {
 	}
 	go uptime.Get(&info.Uptime, synchronize)
 	go cpu.Frequencies(&info.Cpufreqs, synchronize)
+	go cpu.CPUTemp(&info.Cputemp, synchronize)
 	go memory.Statistics(&info.MemTotal, &info.Memory, synchronize)
 	go network.Statistics(&info.NetStat, synchronize)
 	go system.CurrentTime(&info.Date, synchronize)
@@ -63,18 +63,17 @@ func refreshBar(info *system.Info, batteryExists bool) {
 	if batteryExists {
 		fmt.Printf(statusBarFormat(true), info.User, info.Host,
 			info.Kernel, info.Uptime, info.Model, info.Cpufreqs,
-			info.Memory, info.NetName, info.NetSpeed, info.NetStat,
-			info.Battery, info.Date)
+			info.Cputemp, info.Memory, info.NetName, info.NetSpeed,
+			info.NetStat, info.Battery, info.Date)
 	} else {
 		fmt.Printf(statusBarFormat(false), info.User, info.Host,
 			info.Kernel, info.Uptime, info.Model, info.Cpufreqs,
-			info.Memory, info.NetName, info.NetSpeed, info.NetStat,
-			info.Date)
+			info.Cputemp, info.Memory, info.NetName, info.NetSpeed,
+			info.NetStat, info.Date)
 	}
 }
 
 func main() {
-	runtime.GOMAXPROCS(6)
 	system := getStaticSystemInformation()
 	for {
 		go refreshBar(getDynamicSystemInformation(*system))

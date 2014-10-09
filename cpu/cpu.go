@@ -60,6 +60,19 @@ func Frequencies(cpufreqs *string, done chan bool) {
 	done <- true
 }
 
+// getTemperature returns the CPU temperature as indicated by 'hwmon'.
+func getTemperature() int {
+	input, _ := ioutil.ReadFile("/sys/class/hwmon/hwmon0/temp1_input")
+	temp, _ := strconv.Atoi(string(input)[:2])
+	return temp
+}
+
+// CPUTemp sets the temperature of the CPU.
+func CPUTemp(cputemp *int, done chan bool) {
+	*cputemp = getTemperature()
+	done <- true
+}
+
 // Model returns the CPU Model
 func Model() string {
 	return parseCPUInfo()[4][13:]

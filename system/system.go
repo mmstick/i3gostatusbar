@@ -17,6 +17,7 @@ type Info struct {
 	User        string
 	Uptime      string
 	Cpufreqs    string
+	Cputemp     int
 	Memory      string
 	NetStat     string
 	NetName     string

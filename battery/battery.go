@@ -13,9 +13,9 @@ var sprintf = fmt.Sprintf
 func Exists() (bool, int) {
 	battery, _ := ioutil.ReadDir("/sys/class/power_supply")
 	if len(battery) > 0 {
-		return true, 6
+		return true, 7
 	} else {
-		return false, 5
+		return false, 6
 	}
 }
 
