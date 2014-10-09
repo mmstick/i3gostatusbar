@@ -62,8 +62,13 @@ func Frequencies(cpufreqs *string, done chan bool) {
 
 // getTemperature returns the CPU temperature as indicated by 'hwmon'.
 func getTemperature() int {
-	input, _ := ioutil.ReadFile("/sys/class/hwmon/hwmon0/temp1_input")
-	temp, _ := strconv.Atoi(string(input)[:2])
+	input, err := ioutil.ReadFile("/sys/class/hwmon/hwmon0/temp1_input")
+	var temp string
+	if err == nil {
+		temp, _ = strconv.Atoi(string(input)[:2])
+	} else {
+		temp = "N/A"
+	}
 	return temp
 }
 
