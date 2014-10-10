@@ -1,3 +1,4 @@
+// This file contains functions related to processing system uptime information
 package system
 
 import (
@@ -6,14 +7,6 @@ import (
 	"strconv"
 	"strings"
 )
-
-var sprintf = fmt.Sprintf
-
-// strToInt converts a string that we know is an integer to an integer
-func strToInt(input string) int {
-	output, _ := strconv.Atoi(input)
-	return output
-}
 
 // getTimeScale tkes an uptime value and divides it by a scale
 // (days/hours/minutes). After determining the amount of time in that scale,
@@ -60,7 +53,7 @@ func getSeconds(time *int) string {
 // humanReadableTime takes the uptime integer and converts it into a human
 // readable format. Ex: 01:21:18:57 for days:hours:seconds:minutes
 func humanReadableTime(time int) string {
-	return sprintf("%s:%s:%s:%s", getDays(&time), getHours(&time),
+	return fmt.Sprintf("%s:%s:%s:%s", getDays(&time), getHours(&time),
 		getMinutes(&time), getSeconds(&time))
 }
 
@@ -72,6 +65,6 @@ func parseUptime() int {
 
 // Uptime returns the current uptime in days:hours:minutes:seconds format
 func Uptime(uptime *string, done chan bool) {
-	*uptime = sprintf("Uptime: %s", humanReadableTime(parseUptime()))
+	*uptime = fmt.Sprintf("Uptime: %s", humanReadableTime(parseUptime()))
 	done <- true
 }

@@ -1,8 +1,8 @@
+// This is the main cpu file -- it gathers all CPU-related information.
 package system
 
 import (
 	"io/ioutil"
-	"strconv"
 	"strings"
 )
 
@@ -14,8 +14,7 @@ func parseCPUInfo() []string {
 
 // parseCPUCount returns the number of CPU cores in the system.
 func parseCPUCount(cpuinfo []string) int {
-	cores, _ := strconv.Atoi(strings.Fields(cpuinfo[len(cpuinfo) - 18])[3])
-	return cores + 1
+	return strToInt(strings.Fields(cpuinfo[len(cpuinfo) - 18])[3]) + 1
 }
 
 // Model returns the CPU Model

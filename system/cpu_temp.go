@@ -1,9 +1,9 @@
+// This file belongs to the cpu group; gathers information about cpu temperature.
 package system
 
 import (
 	"fmt"
 	"io/ioutil"
-	"strconv"
 )
 
 /* getHwmon searches for a hwmon entry that has the 'k10temp' name and returns
@@ -28,7 +28,7 @@ func getHwmon() string {
 func hwmonCheck(input string, err *error) int {
 	var temp int
 	if *err == nil {
-		temp, _ = strconv.Atoi(input[:2])
+		temp = strToInt(input[:2])
 	} else {
 		temp = 0
 	}

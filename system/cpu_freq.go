@@ -1,3 +1,4 @@
+// This file belongs to the cpu group; gathers information about cpu frequencies.
 package system
 
 import "fmt"

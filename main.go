@@ -1,9 +1,6 @@
 package main
 
 import (
-	"github.com/mmstick/i3gostatusbar/battery"
-	"github.com/mmstick/i3gostatusbar/memory"
-	"github.com/mmstick/i3gostatusbar/network"
 	"github.com/mmstick/i3gostatusbar/system"
 	"fmt"
 	"time"
@@ -27,11 +24,11 @@ func getStaticSystemInformation() *system.Info {
 	info := system.Info{
 		Kernel:   system.KernelVersion(),
 		Model:    system.CPUModel(),
-		MemTotal: memory.Installed(),
+		MemTotal: system.TotalMem(),
 		Host:     system.Host(),
 		User:     system.Username(),
-		NetName:  network.Name(),
-		NetSpeed: network.Speed(),
+		NetName:  system.NetworkName(),
+		NetSpeed: system.NetworkSpeed(),
 	}
 	return &info
 }
@@ -39,15 +36,15 @@ func getStaticSystemInformation() *system.Info {
 // getDynamicSystemInformation adds dynamic system information to the
 // systemInfo struct and checks for the existence of a battery.
 func getDynamicSystemInformation(info system.Info) (*system.Info, bool) {
-	batteryExists, jobs := battery.Exists()
+	batteryExists, jobs := system.BatteryExists()
 	synchronize := make(chan bool, jobs)
 	if batteryExists {
-		go battery.Information(&info.Battery, synchronize)
+		go system.BatteryInfo(&info.Battery, synchronize)
 	}
 	go system.CPUFrequencies(&info.Cpufreqs, synchronize)
 	go system.CPUTemp(&info.Cputemp, synchronize)
-	go memory.Statistics(&info.MemTotal, &info.Memory, synchronize)
-	go network.Statistics(&info.NetStat, synchronize)
+	go system.MemStats(&info.MemTotal, &info.Memory, synchronize)
+	go system.NetStats(&info.NetStat, synchronize)
 	go system.CurrentTime(&info.Date, synchronize)
 	go system.Uptime(&info.Uptime, synchronize)
 	for jobCount := 0; jobCount < jobs; jobCount++ {

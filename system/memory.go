@@ -1,30 +1,27 @@
-// Package memory contains functions for obtaining information about memory.
-package memory
+// This file contains functions for obtaining information about memory.
+package system
 
 import (
 	"fmt"
 	"io/ioutil"
-	"strconv"
 	"strings"
 )
 
 var (
-	sprintf = fmt.Sprintf
 	fields   = strings.Fields
 	split   = strings.Split
-	toInt   = strconv.Atoi
 )
 
 // parseMem opens meminfo and splits a specific line from that file, returning
 // the field as a value representing MiB.
 func parseMem(line uint) uint {
 	cached, _ := ioutil.ReadFile("/proc/meminfo")
-	memory, _ := toInt(fields(split(string(cached), "\n")[line])[1])
+	memory := strToInt(fields(split(string(cached), "\n")[line])[1])
 	return uint(memory / 1024)
 }
 
-// Installed returns the amount of memory installed in the system.
-func Installed() uint {
+// TotalMem returns the amount of memory installed in the system.
+func TotalMem() uint {
 	return parseMem(0)
 }
 
@@ -38,9 +35,9 @@ func memUsed(memTotal *uint) uint {
 	return *memTotal - memAvailable()
 }
 
-// Statistics returns a string indicating memory usage out of total available
+// MemStats returns a string indicating memory usage out of total available
 // memory.
-func Statistics(memTotal *uint, memStat *string, done chan bool) {
-	*memStat = sprintf("RAM: %d/%dMiB", memUsed(memTotal), *memTotal)
+func MemStats(memTotal *uint, memStat *string, done chan bool) {
+	*memStat = fmt.Sprintf("RAM: %d/%dMiB", memUsed(memTotal), *memTotal)
 	done <- true
 }
