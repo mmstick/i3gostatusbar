@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/mmstick/i3gostatusbar/battery"
-	"github.com/mmstick/i3gostatusbar/cpu"
 	"github.com/mmstick/i3gostatusbar/memory"
 	"github.com/mmstick/i3gostatusbar/network"
 	"github.com/mmstick/i3gostatusbar/system"
@@ -27,7 +26,7 @@ func statusBarFormat(batteryExists bool) string {
 func getStaticSystemInformation() *system.Info {
 	info := system.Info{
 		Kernel:   system.KernelVersion(),
-		Model:    cpu.Model(),
+		Model:    system.CPUModel(),
 		MemTotal: memory.Installed(),
 		Host:     system.Host(),
 		User:     system.Username(),
@@ -45,8 +44,8 @@ func getDynamicSystemInformation(info system.Info) (*system.Info, bool) {
 	if batteryExists {
 		go battery.Information(&info.Battery, synchronize)
 	}
-	go cpu.Frequencies(&info.Cpufreqs, synchronize)
-	go cpu.CPUTemp(&info.Cputemp, synchronize)
+	go system.CPUFrequencies(&info.Cpufreqs, synchronize)
+	go system.CPUTemp(&info.Cputemp, synchronize)
 	go memory.Statistics(&info.MemTotal, &info.Memory, synchronize)
 	go network.Statistics(&info.NetStat, synchronize)
 	go system.CurrentTime(&info.Date, synchronize)
