@@ -17,8 +17,8 @@ func parseFile(file string) []string {
 
 // connectionIsNotLoopback returns true if the connection is not a loopback
 // address.
-func connectionIsNotLoopback(connection *string) bool {
-	if *connection == "lo" {
+func connectionIsNotLoopback(connection string) bool {
+	if connection == "lo" {
 		return false
 	} else {
 		return true
@@ -26,8 +26,8 @@ func connectionIsNotLoopback(connection *string) bool {
 }
 
 // connectionIsUp returns true if the connection status is 'up'.
-func connectionIsUp(connection *string) bool {
-	if parseFile("/sys/class/net/" + *connection + "/operstate")[0][0] == 'u' {
+func connectionIsUp(connection string) bool {
+	if parseFile("/sys/class/net/" + connection + "/operstate")[0][0] == 'u' {
 		return true
 	} else {
 		return false
@@ -37,7 +37,7 @@ func connectionIsUp(connection *string) bool {
 // connectionIsActive returns true if the connection is active and isn't a
 // loopback address.
 func connectionIsActive(connection string) bool {
-	if connectionIsNotLoopback(&connection) && connectionIsUp(&connection) {
+	if connectionIsNotLoopback(connection) && connectionIsUp(connection) {
 		return true
 	} else {
 		return false

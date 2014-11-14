@@ -15,8 +15,8 @@ func parseFrequency(frequency string) string {
 }
 
 // getFrequencyFormat returns the printf format for the current core frequency.
-func getFrequencyFormat(index *int, lastCore int) string {
-	if *index == lastCore {
+func getFrequencyFormat(index int, lastCore int) string {
+	if index == lastCore {
 		return "%s"
 	} else {
 		return "%s "
@@ -24,8 +24,8 @@ func getFrequencyFormat(index *int, lastCore int) string {
 }
 
 // getCoreFrequency returns the frequency of the current core.
-func getCoreFrequency(cpuInfo []string, index *int, format *string) string {
-	return fmt.Sprintf(*format, parseFrequency(cpuInfo[*index*28+7]))
+func getCoreFrequency(cpuInfo []string, index int, format string) string {
+	return fmt.Sprintf(format, parseFrequency(cpuInfo[(index*28)+7]))
 }
 
 // getFrequencyString returns all core frequencies as a string.
@@ -33,9 +33,36 @@ func getFrequencyString() string {
 	cpuInfo := parseCPUInfo()
 	numCPUs := parseCPUCount(cpuInfo)
 	var cpuFrequencies string
-	for index := 0; index < numCPUs; index++ {
-		format := getFrequencyFormat(&index, numCPUs-1)
-		cpuFrequencies += getCoreFrequency(cpuInfo, &index, &format)
+	index := 0
+	switch numCPUs % 4 {
+	case 1:
+		format := getFrequencyFormat(index, numCPUs-1)
+		cpuFrequencies += getCoreFrequency(cpuInfo, index, format)
+		index++
+	case 2:
+		format := getFrequencyFormat(index, numCPUs-1)
+		cpuFrequencies += getCoreFrequency(cpuInfo, index, format)
+		format = getFrequencyFormat(index+1, numCPUs-1)
+		cpuFrequencies += getCoreFrequency(cpuInfo, index+1, format)
+		index += 2
+	case 3:
+		format := getFrequencyFormat(index, numCPUs-1)
+		cpuFrequencies += getCoreFrequency(cpuInfo, index, format)
+		format = getFrequencyFormat(index+1, numCPUs-1)
+		cpuFrequencies += getCoreFrequency(cpuInfo, index+1, format)
+		format = getFrequencyFormat(index+2, numCPUs-1)
+		cpuFrequencies += getCoreFrequency(cpuInfo, index+2, format)
+		index += 3
+	}
+	for ; index != numCPUs; index += 4 {
+		format := getFrequencyFormat(index, numCPUs-1)
+		cpuFrequencies += getCoreFrequency(cpuInfo, index, format)
+		format = getFrequencyFormat(index+1, numCPUs-1)
+		cpuFrequencies += getCoreFrequency(cpuInfo, index+1, format)
+		format = getFrequencyFormat(index+2, numCPUs-1)
+		cpuFrequencies += getCoreFrequency(cpuInfo, index+2, format)
+		format = getFrequencyFormat(index+3, numCPUs-1)
+		cpuFrequencies += getCoreFrequency(cpuInfo, index+3, format)
 	}
 	return cpuFrequencies
 }
